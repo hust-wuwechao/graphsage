@@ -24,6 +24,7 @@ class UniformNeighborSampler(Layer):
     def _call(self, inputs):
         ids, num_samples = inputs
         print("ids ", ids)
+        print("self.adj_info", self.adj_info)
         adj_lists = tf.nn.embedding_lookup(self.adj_info, ids)
         #
         print("adj_lists", adj_lists)		
