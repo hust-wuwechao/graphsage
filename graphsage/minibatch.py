@@ -218,7 +218,6 @@ class NodeMinibatchIterator(object):
         self.val_nodes = [n for n in self.G.nodes() if self.G.node[n]['val']]
 		
         self.test_nodes = [n for n in self.G.nodes() if self.G.node[n]['test']]
-         
         self.no_train_nodes_set = set(self.val_nodes + self.test_nodes)
         self.train_nodes = set(G.nodes()).difference(self.no_train_nodes_set)
         # don't train on nodes that only have edges to test set
@@ -285,15 +284,14 @@ class NodeMinibatchIterator(object):
         return self.batch_num * self.batch_size >= len(self.train_nodes)
 
     def batch_feed_dict(self, batch_nodes, val=False):
-        batch1id = batch_nodes
+        batch1id = batch_nodes		
         batch1 = [self.id2idx[n] for n in batch1id]
-              
+        print("batch1",len(batch1))      
         labels = np.vstack([self._make_label_vec(node) for node in batch1id])
         feed_dict = dict()
         feed_dict.update({self.placeholders['batch_size'] : len(batch1)})
         feed_dict.update({self.placeholders['batch']: batch1})
         feed_dict.update({self.placeholders['labels']: labels})
-
         return feed_dict, labels
 
     def node_val_feed_dict(self, size=None, test=False):
@@ -323,6 +321,7 @@ class NodeMinibatchIterator(object):
         return len(self.train_nodes) // self.batch_size + 1
 
     def next_minibatch_feed_dict(self):
+	    #下一次的节点
         start_idx = self.batch_num * self.batch_size
         self.batch_num += 1
         end_idx = min(start_idx + self.batch_size, len(self.train_nodes))
@@ -339,5 +338,6 @@ class NodeMinibatchIterator(object):
         """ Re-shuffle the training set.
             Also reset the batch number.
         """
+        #对于节点对于数据的随机的排列
         self.train_nodes = np.random.permutation(self.train_nodes)
         self.batch_num = 0
