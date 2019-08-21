@@ -201,6 +201,7 @@ class NodeMinibatchIterator(object):
 
         self.G = G
         self.nodes = G.nodes()
+		print("self.nodes",self.nodes.shape)
         self.id2idx = id2idx
         self.placeholders = placeholders
         self.batch_size = batch_size
@@ -208,19 +209,23 @@ class NodeMinibatchIterator(object):
         self.batch_num = 0
         self.label_map = label_map
         self.num_classes = num_classes
-
+        #得到了
         self.adj, self.deg = self.construct_adj()
+		print("self.adj",self.adj.shape)
+		print("self.deg",self.deg.shape)
         self.test_adj = self.construct_test_adj()
 
         self.val_nodes = [n for n in self.G.nodes() if self.G.node[n]['val']]
+		
         self.test_nodes = [n for n in self.G.nodes() if self.G.node[n]['test']]
-
+         
         self.no_train_nodes_set = set(self.val_nodes + self.test_nodes)
         self.train_nodes = set(G.nodes()).difference(self.no_train_nodes_set)
         # don't train on nodes that only have edges to test set
-		# 这个不太懂
+		# 这个不太懂,需要读书大于0
         self.train_nodes = [n for n in self.train_nodes if self.deg[id2idx[n]] > 0]
-
+        print("self.train_nodes",self.train_nodes.shape)
+		print("self.test_nodes",self.test_nodes.shape)
     def _make_label_vec(self, node):
         label = self.label_map[node]
 		#如果是类别是一个列表
@@ -235,23 +240,30 @@ class NodeMinibatchIterator(object):
     #如何构造进阶矩阵
     def construct_adj(self):
         adj = len(self.id2idx)*np.ones((len(self.id2idx)+1, self.max_degree))
-        print("adj",adj.shape)
-        print("len(self.id2idx)",len(self.id2idx))
-        deg = np.zeros((len(self.id2idx),))
+        print("adj",adj.shape) #adj (14756, 128)
+        print("len(self.id2idx)",len(self.id2idx)) # 14755
+        deg = np.zeros((len(self.id2idx),))        # 每一个定点的度数
 
         for nodeid in self.G.nodes():
+		    #跳过测试和验证集合
             if self.G.node[nodeid]['test'] or self.G.node[nodeid]['val']:
                 continue
+			#得到每一个节点的neighbor
             neighbors = np.array([self.id2idx[neighbor] 
                 for neighbor in self.G.neighbors(nodeid)
                 if (not self.G[nodeid][neighbor]['train_removed'])])
+			#得到节点的度数
             deg[self.id2idx[nodeid]] = len(neighbors)
+			#
             if len(neighbors) == 0:
                 continue
+			#如果大于最大度数
             if len(neighbors) > self.max_degree:
+			    #在里面随机选择
                 neighbors = np.random.choice(neighbors, self.max_degree, replace=False)
             elif len(neighbors) < self.max_degree:
                 neighbors = np.random.choice(neighbors, self.max_degree, replace=True)
+			#得到固定数目的neighbor
             adj[self.id2idx[nodeid], :] = neighbors
         return adj, deg
 
