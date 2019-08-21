@@ -201,7 +201,7 @@ class NodeMinibatchIterator(object):
 
         self.G = G
         self.nodes = G.nodes()
-        print("self.nodes",self.nodes.shape)
+        #print("self.nodes",self.nodes.shape)
         self.id2idx = id2idx
         self.placeholders = placeholders
         self.batch_size = batch_size
