@@ -23,7 +23,7 @@ class UniformNeighborSampler(Layer):
 
     def _call(self, inputs):
         ids, num_samples = inputs
-        print("ids ", len(ids))
+        #print("ids ", len(ids))
         print("num_samples ", num_samples)
         print("ids ", ids)
         print("self.adj_info", self.adj_info)
