@@ -212,20 +212,24 @@ class NodeMinibatchIterator(object):
         self.no_train_nodes_set = set(self.val_nodes + self.test_nodes)
         self.train_nodes = set(G.nodes()).difference(self.no_train_nodes_set)
         # don't train on nodes that only have edges to test set
+		# 这个不太懂
         self.train_nodes = [n for n in self.train_nodes if self.deg[id2idx[n]] > 0]
 
     def _make_label_vec(self, node):
         label = self.label_map[node]
+		#如果是类别是一个列表
         if isinstance(label, list):
             label_vec = np.array(label)
         else:
             label_vec = np.zeros((self.num_classes))
             class_ind = self.label_map[node]
+			#设置对应的类别为1
             label_vec[class_ind] = 1
         return label_vec
-
+    #如何构造进阶矩阵
     def construct_adj(self):
         adj = len(self.id2idx)*np.ones((len(self.id2idx)+1, self.max_degree))
+		print("adj_shape", adj.shape)
         deg = np.zeros((len(self.id2idx),))
 
         for nodeid in self.G.nodes():
