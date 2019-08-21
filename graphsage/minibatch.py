@@ -4,6 +4,11 @@ from __future__ import print_function
 
 import numpy as np
 
+import os
+import time
+import tensorflow as tf
+import numpy as np
+
 np.random.seed(123)
 
 class EdgeMinibatchIterator(object):
