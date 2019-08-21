@@ -235,6 +235,7 @@ class NodeMinibatchIterator(object):
     #如何构造进阶矩阵
     def construct_adj(self):
         adj = len(self.id2idx)*np.ones((len(self.id2idx)+1, self.max_degree))
+        print("adj",adj.shape)
         print("len(self.id2idx)",len(self.id2idx))
         deg = np.zeros((len(self.id2idx),))
 
