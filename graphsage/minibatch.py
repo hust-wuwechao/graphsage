@@ -224,8 +224,8 @@ class NodeMinibatchIterator(object):
         # don't train on nodes that only have edges to test set
 		# 这个不太懂,需要读书大于0
         self.train_nodes = [n for n in self.train_nodes if self.deg[id2idx[n]] > 0]
-        print("self.train_nodes",self.train_nodes.shape)
-        print("self.test_nodes",self.test_nodes.shape)
+        #print("self.train_nodes",self.train_nodes.shape)
+        #print("self.test_nodes",self.test_nodes.shape)
     def _make_label_vec(self, node):
         label = self.label_map[node]
 		#如果是类别是一个列表
