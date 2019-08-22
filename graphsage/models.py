@@ -278,7 +278,7 @@ class SampleAndAggregate(GeneralizedModel):
             sampler = layer_infos[t].neigh_sampler
 			#  得到一层得到采样的节点，samples[k] 等于上一层的节点的树木，根据这些节点的， 再起Neighbor 里面进行 采样得到node
             # 返回的是  samples[k]*num_samples 的adjlist
-			node = sampler((samples[k], layer_infos[t].num_samples))
+            node = sampler((samples[k], layer_infos[t].num_samples))
             print("node ", node.shape)
 			#  这一层的节点的(这一层的节点数为   分贝为：  batch*s3     batch*s3*s2     Batch*s3*s2*S1  )这么多个节点一次性全部算出来了
             samples.append(tf.reshape(node, [support_size * batch_size,]))
