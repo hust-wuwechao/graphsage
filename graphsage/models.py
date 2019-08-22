@@ -282,7 +282,7 @@ class SampleAndAggregate(GeneralizedModel):
             print("node ", node.shape)                                    
 			#   这一层的节点的(这一层的节点数为   分贝为：  batch*s3     batch*s3*s2     Batch*s3*s2*S1  )这么多个节点一次性全部算出来了
             #   这样就变成了一维度的数组了。
-			samples.append(tf.reshape(node, [support_size * batch_size,]))
+            samples.append(tf.reshape(node, [support_size * batch_size,]))
             #  print("samples", samples.shape)
 			#  讲 S3       S3*S2       S3*s2—S1 加入数组
             support_sizes.append(support_size)
