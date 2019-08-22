@@ -267,27 +267,27 @@ class SampleAndAggregate(GeneralizedModel):
         support_sizes = [support_size]
 		#对于存在多个层的话，每一层的同一个节点所采样的neighbr 可能都不一样的
         # 对于第一层，实际需要的采样的数值是，我们假设有2层
-		print("len(layer_infos)", len(layer_infos))
+        print("len(layer_infos)", len(layer_infos))
         for k in range(len(layer_infos)):
 		    #   从第一层开始  S1  s2   S3 
             t = len(layer_infos) - k - 1
 			print("k", k)
 			#  得到最后一层的 s3   S3*s2    S3*S2*s1
             support_size *= layer_infos[t].num_samples
-			print("support_size", support_size)
+            print("support_size", support_size)
             sampler = layer_infos[t].neigh_sampler
 			#  得到一层得到采样的节点，samples[k] 等于上一层的节点的树木，根据这些节点的， 再起Neighbor 里面进行 采样得到node
             # 返回的是  samples[k]*num_samples 的adjlist
 			node = sampler((samples[k], layer_infos[t].num_samples))
-			print("node ", node.shape)
+            print("node ", node.shape)
 			#  这一层的节点的(这一层的节点数为   分贝为：  batch*s3     batch*s3*s2     Batch*s3*s2*S1  )这么多个节点一次性全部算出来了
             samples.append(tf.reshape(node, [support_size * batch_size,]))
-			print("samples", samples.shape)
+            print("samples", samples.shape)
 			# 讲 S3       S3*S2       S3*s2—S1 加入数组
             support_sizes.append(support_size)
-			print("support_sizes", support_sizes)
+            print("support_sizes", support_sizes)
         print("samples", sample.shape)
-		print("support_sizes", support_sizes)
+        print("support_sizes", support_sizes)
         return samples, support_sizes
 
 
