@@ -320,7 +320,7 @@ class SampleAndAggregate(GeneralizedModel):
         if new_agg:
             aggregators = []
         #便利每一层
-		print("************************************************************************************")
+        print("************************************************************************************")
         print("range(len(num_samples))",range(len(num_samples)))
         for layer in range(len(num_samples)): #得到每一层的聚集
 		    print("layer",layer)
