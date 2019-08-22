@@ -301,8 +301,8 @@ class SampleAndAggregate(GeneralizedModel):
         """ At each layer, aggregate hidden representations of neighbors to compute the hidden representations 
             at next layer。    我们需要知道的是： 如何中间出现多层，那么得到下一层的结果按理说， 两被告和薄弱向量也会提取最新的
         Args:
-            samples:               （是每一层的数据的样本， 从近处到远处a list of samples of variable hops away for convolving at each layer of the
-                network.            Length is the number of layers + 1.     Each is a vector of node indices（每一个都是采样的节点的索引）.
+            samples:                （是每一层的数据的样本， 从近处到远处a list of samples of variable hops away for convolving at each layer of the
+                network.              Length is the number of layers + 1.     Each is a vector of node indices（每一个都是采样的节点的索引）.
             input_features:            the input features for each sample of various hops away.
             dims:                   a list of dimensions of the hidden representations from the input layer to the
                                     final layer. Length is the number of layers + 1. （）明白。每一层的维度列表
@@ -312,13 +312,14 @@ class SampleAndAggregate(GeneralizedModel):
         Returns:
                                     The hidden representation at the final layer for all nodes in batch
         """
-
+        print("sample",samples)
         if batch_size is None:
             batch_size = self.batch_size
 
             # length: number of layers + 1
         # 查找采样的节点的向量
         hidden = [tf.nn.embedding_lookup(input_features, node_samples) for node_samples in samples]
+        print("hidden", hidden)
         new_agg = aggregators is None
         if new_agg:
             aggregators = []
@@ -350,22 +351,22 @@ class SampleAndAggregate(GeneralizedModel):
             # hidden representation at current layer for all support nodes that are various hops away
             next_hidden = []
             # as layer increases, the number of support nodes needed decreases#
+            # hop  0 ,1
+            print("hop  len(num_samples) - layer ", hop, len(num_samples) - layer)
+            # 0, 2
+            print("batch_size  support_ ", batch_size, support_sizes)
+            # support_sizes  [1, 10, 250]
+            print(" num_samples", num_samples)
+            # [25, 10]
+            print(" dims", dims)
+            # [50, 128, 128]
             for hop in range(len(num_samples) - layer):
-                #hop  0 ,1
-                print("hop  len(num_samples) - layer ",hop, len(num_samples) - layer)
-                # 0, 2
                 dim_mult = 2 if concat and (layer != 0) else 1
-                print("batch_size  support_ ", batch_size, support_sizes)
-                #support_sizes  [1, 10, 250]
-                print(" num_samples", num_samples)
-                #[25, 10]
-                print(" dims", dims)
-                #[50, 128, 128]
                 neigh_dims = [batch_size * support_sizes[hop],
                               num_samples[len(num_samples) - hop - 1],
                               dim_mult * dims[layer]]
-                # layer =0   第一次： hop =     512*1    10       50   第二次 hop =1   512*10    25    50
-                # layer=1    第一ci    hop =0   512      10       256（进行了拼接）
+                # layer =0   第一次： hop =     512*1     10       50         第二次 hop =1     512*10      25      50
+                # layer=1    第一ci    hop =0   512       10       256       （进行了拼接）
                 print("neigh_dims", neigh_dims)   # 25*50
                 #结果进行聚集
                 h = aggregator((hidden[hop],
