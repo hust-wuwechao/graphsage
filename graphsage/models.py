@@ -355,6 +355,10 @@ class SampleAndAggregate(GeneralizedModel):
                 print("hop  len(num_samples) - layer ",hop, len(num_samples) - layer)
                 dim_mult = 2 if concat and (layer != 0) else 1
                 print("batch_size support_ ", batch_size,support_sizes)
+                #[1, 10, 250]
+                # 512*
+                print(" num_samples", num_samples)
+                print(" dims", dims)
                 neigh_dims = [batch_size * support_sizes[hop],
                               num_samples[len(num_samples) - hop - 1],
                               dim_mult * dims[layer]]
