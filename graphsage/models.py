@@ -352,7 +352,7 @@ class SampleAndAggregate(GeneralizedModel):
             next_hidden = []
             # as layer increases, the number of support nodes needed decreases#
             # hop  0 ,1
-            print("hop  len(num_samples) - layer ", hop, len(num_samples) - layer)
+            #print("hop  len(num_samples) - layer ", hop, len(num_samples) - layer)
             # 0, 2
             print("batch_size  support_ ", batch_size, support_sizes)
             # support_sizes  [1, 10, 250]
