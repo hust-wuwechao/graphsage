@@ -370,7 +370,7 @@ class SampleAndAggregate(GeneralizedModel):
                 #结果进行聚集
                 h = aggregator((hidden[hop],
                                 tf.reshape(hidden[hop + 1], neigh_dims)))
-                printf("hidden[hop]", hidden[hop],hidden[hop+1])
+                print("hidden[hop]", hidden[hop],hidden[hop+1])
                 print("h", h)
                 next_hidden.append(h)
             hidden = next_hidden
