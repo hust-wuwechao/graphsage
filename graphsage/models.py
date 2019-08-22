@@ -324,7 +324,7 @@ class SampleAndAggregate(GeneralizedModel):
             aggregators = []
         # 便利每一层
         print("************************************************************************************")
-        print("range(len(num_samples))", range(len(num_samples)))
+        print("range(len(num_samples))", range(len(num_samples))) # 0 1
         for layer in range(len(num_samples)):
             print("layer", layer)
             # print("new_agg",new_agg)
@@ -351,12 +351,14 @@ class SampleAndAggregate(GeneralizedModel):
             next_hidden = []
             # as layer increases, the number of support nodes needed decreases#
             for hop in range(len(num_samples) - layer):
-                print("hop len(num_samples) - layer ", new_agg, len(num_samples) - layer)
+                #hop  0 ,1
+                print("hop  len(num_samples) - layer ",hop, len(num_samples) - layer)
                 dim_mult = 2 if concat and (layer != 0) else 1
+                print("batch_size support_ ", batch_size,support_sizes)
                 neigh_dims = [batch_size * support_sizes[hop],
                               num_samples[len(num_samples) - hop - 1],
                               dim_mult * dims[layer]]
-                print("neigh_dims", neigh_dims)
+                print("neigh_dims", neigh_dims) # 25*50
                 h = aggregator((hidden[hop],
                                 tf.reshape(hidden[hop + 1], neigh_dims)))
                 next_hidden.append(h)
