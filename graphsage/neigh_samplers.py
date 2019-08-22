@@ -23,15 +23,17 @@ class UniformNeighborSampler(Layer):
 
     def _call(self, inputs):
         ids, num_samples = inputs
-        #print("ids ", len(ids))
+        print("ids ", ids)
         print("num_samples ", num_samples)
         print("ids ", ids)
         print("self.adj_info", self.adj_info)
+		#只是截取取得需要C采样的节点对应的邻接信息，
         adj_lists = tf.nn.embedding_lookup(self.adj_info, ids)
-        #
+        # 让每一个节点的neighbor 也就是按照每一行随机化。
         print("adj_lists", adj_lists)		
         adj_lists = tf.transpose(tf.random_shuffle(tf.transpose(adj_lists)))
         print("adj_lists  ", adj_lists )
+        #我们只会截取这些beigb 的数目
         adj_lists = tf.slice(adj_lists, [0,0], [-1, num_samples])
         print("adj_lists  ", adj_lists )
         return adj_lists

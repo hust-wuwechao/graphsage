@@ -178,10 +178,10 @@ class GeneralizedModel(Model):
 # SAGEInfo is a namedtuple that specifies the parameters 
 # of the recursive GraphSAGE layers
 SAGEInfo = namedtuple("SAGEInfo",
-    ['layer_name', # name of the layer (to get feature embedding etc.)
-     'neigh_sampler', # callable neigh_sampler constructor
+    ['layer_name',       # name of the layer (to get feature embedding etc.)
+     'neigh_sampler',    # callable neigh_sampler constructor
      'num_samples',
-     'output_dim' # the output (i.e., hidden) dimension
+     'output_dim'        # the output (i.e., hidden) dimension
     ])
 
 class SampleAndAggregate(GeneralizedModel):
@@ -253,7 +253,6 @@ class SampleAndAggregate(GeneralizedModel):
 
     def sample(self, inputs, layer_infos, batch_size=None):
         """ Sample neighbors to be the supportive fields for multi-layer convolutions.
-
         Args:
             inputs: batch inputs
             batch_size: the number of inputs (different for batch inputs and negative samples).
@@ -265,28 +264,46 @@ class SampleAndAggregate(GeneralizedModel):
         # size of convolution support at each layer per node
         support_size = 1
         support_sizes = [support_size]
+		#对于存在多个层的话，每一层的同一个节点所采样的neighbr 可能都不一样的
+        #  对于第一层，实际需要的采样的数值是，我们假设有2层
+		# 
+		print("len(layer_infos)", len(layer_infos))
         for k in range(len(layer_infos)):
+		    #   从第一层开始  S1  s2   S3 
             t = len(layer_infos) - k - 1
+			print("k", k)
+			#  得到最后一层的 s3   S3*s2    S3*S2*s1
             support_size *= layer_infos[t].num_samples
+			print("support_size", support_size)
             sampler = layer_infos[t].neigh_sampler
-            node = sampler((samples[k], layer_infos[t].num_samples))
+			#  得到一层得到采样的节点，samples[k] 等于上一层的节点的树木，根据这些节点的， 再起Neighbor 里面进行 采样得到node
+            # 返回的是  samples[k]*num_samples 的adjlist
+			node = sampler((samples[k], layer_infos[t].num_samples))
+			print("node ", node.shape)
+			#  这一层的节点的(这一层的节点数为   分贝为：  batch*s3     batch*s3*s2     Batch*s3*s2*S1  )这么多个节点一次性全部算出来了
             samples.append(tf.reshape(node, [support_size * batch_size,]))
+			print("samples", samples.shape)
+			# 讲 S3       S3*S2       S3*s2—S1 加入数组
             support_sizes.append(support_size)
+			print("support_sizes", support_sizes)
+        print("samples", sample.shape)
+		print("support_sizes", support_sizes)
         return samples, support_sizes
 
 
     def aggregate(self, samples, input_features, dims, num_samples, support_sizes, batch_size=None,
             aggregators=None, name=None, concat=False, model_size="small"):
+			
         """ At each layer, aggregate hidden representations of neighbors to compute the hidden representations 
-            at next layer.
+            at next layer。    我们需要知道的是： 如何中间出现多层，那么得到下一层的结果按理说， 两被告和薄弱向量也会提取最新的
         Args:
-            samples: a list of samples of variable hops away for convolving at each layer of the
-                network. Length is the number of layers + 1. Each is a vector of node indices.
-            input_features: the input features for each sample of various hops away.
-            dims: a list of dimensions of the hidden representations from the input layer to the
-                final layer. Length is the number of layers + 1.
-            num_samples: list of number of samples for each layer.
-            support_sizes: the number of nodes to gather information from for each layer.
+            samples:          a list of samples of variable hops away for convolving at each layer of the
+                network.    Length is the number of layers + 1.     Each is a vector of node indices（每一个都是采样的节点的索引）.
+            input_features:            the input features for each sample of various hops away.
+            dims:        a list of dimensions of the hidden representations from the input layer to the
+                final layer. Length is the number of layers + 1. （）明白。每一层的维度列表
+            num_samples: list of number of samples for each layer. 每一层的采样数数目
+            support_sizes:         the number of nodes to gather information from for each layer.  
             batch_size: the number of inputs (different for batch inputs and negative samples).
         Returns:
             The hidden representation at the final layer for all nodes in batch
@@ -296,6 +313,7 @@ class SampleAndAggregate(GeneralizedModel):
             batch_size = self.batch_size
 
         # length: number of layers + 1
+		# 查找采样的节点的向量
         hidden = [tf.nn.embedding_lookup(input_features, node_samples) for node_samples in samples]
         new_agg = aggregators is None
         if new_agg:
@@ -318,6 +336,7 @@ class SampleAndAggregate(GeneralizedModel):
             # hidden representation at current layer for all support nodes that are various hops away
             next_hidden = []
             # as layer increases, the number of support nodes needed decreases
+			#
             for hop in range(len(num_samples) - layer):
                 dim_mult = 2 if concat and (layer != 0) else 1
                 neigh_dims = [batch_size * support_sizes[hop], 
