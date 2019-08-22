@@ -324,7 +324,7 @@ class SampleAndAggregate(GeneralizedModel):
             aggregators = []
         # 便利每一层
         print("************************************************************************************")
-        print("range(len(num_samples))", range(len(num_samples))) # 0 1
+        print("range(len(num_samples))", range(len(num_samples)))    # 0 1
         for layer in range(len(num_samples)):
             print("layer", layer)
             # print("new_agg",new_agg)
@@ -340,7 +340,7 @@ class SampleAndAggregate(GeneralizedModel):
                                                      dropout=self.placeholders['dropout'],
                                                      name=name, concat=concat, model_size=model_size)
                 else:
-                    #
+                    # 需要聚集器是针对一层的
                     aggregator = self.aggregator_cls(dim_mult * dims[layer], dims[layer + 1],
                                                      dropout=self.placeholders['dropout'],
                                                      name=name, concat=concat, model_size=model_size)
@@ -353,20 +353,27 @@ class SampleAndAggregate(GeneralizedModel):
             for hop in range(len(num_samples) - layer):
                 #hop  0 ,1
                 print("hop  len(num_samples) - layer ",hop, len(num_samples) - layer)
+                # 0, 2
                 dim_mult = 2 if concat and (layer != 0) else 1
-                print("batch_size support_ ", batch_size,support_sizes)
-                #[1, 10, 250]
-                # 512*
+                print("batch_size  support_ ", batch_size, support_sizes)
+                #support_sizes  [1, 10, 250]
                 print(" num_samples", num_samples)
+                #[25, 10]
                 print(" dims", dims)
+                #[50, 128, 128]
                 neigh_dims = [batch_size * support_sizes[hop],
                               num_samples[len(num_samples) - hop - 1],
                               dim_mult * dims[layer]]
-                print("neigh_dims", neigh_dims) # 25*50
+                # layer =0   第一次： hop =     512*1    10       50   第二次 hop =1   512*10    25    50
+                # layer=1    第一ci    hop =0   512      10       256（进行了拼接）
+                print("neigh_dims", neigh_dims)   # 25*50
+                #结果进行聚集
                 h = aggregator((hidden[hop],
                                 tf.reshape(hidden[hop + 1], neigh_dims)))
+                print("h", h)
                 next_hidden.append(h)
             hidden = next_hidden
+            print("hidden", hidden)
         print("************************************************************************************")
         return hidden[0], aggregators
 
