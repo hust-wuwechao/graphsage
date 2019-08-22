@@ -322,11 +322,10 @@ class SampleAndAggregate(GeneralizedModel):
         #便利每一层
         print("************************************************************************************")
         print("range(len(num_samples))",range(len(num_samples)))
-        for layer in range(len(num_samples)): #得到每一层的聚集
+        for layer in range(len(num_samples)):
 		    print("layer",layer)
             #print("new_agg",new_agg)
-            if new_agg:     
-			    #如果是拼接
+            if new_agg:    
                 print("if new_agg:")
                 dim_mult = 2 if concat and (layer != 0) else 1
                 # aggregator at current layer
