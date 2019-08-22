@@ -271,7 +271,7 @@ class SampleAndAggregate(GeneralizedModel):
         for k in range(len(layer_infos)):  
 		    #   从第一层开始  S1  s2   S3 
             t = len(layer_infos) - k - 1                     #   1,   0
-            print("k", k)   0 ,1                             #   0,   1
+            print("k", k)  # 0 ,1                             #   0,   1
 			#  得到最后一层的 s3   S3*s2    S3*S2*s1   
             support_size *= layer_infos[t].num_samples       #   10   250
             print("support_size", support_size)           
