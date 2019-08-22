@@ -1,3 +1,4 @@
+#coding:utf-8
 from collections import namedtuple
 
 import tensorflow as tf
@@ -265,8 +266,7 @@ class SampleAndAggregate(GeneralizedModel):
         support_size = 1
         support_sizes = [support_size]
 		#对于存在多个层的话，每一层的同一个节点所采样的neighbr 可能都不一样的
-        #  对于第一层，实际需要的采样的数值是，我们假设有2层
-		# 
+        # 对于第一层，实际需要的采样的数值是，我们假设有2层
 		print("len(layer_infos)", len(layer_infos))
         for k in range(len(layer_infos)):
 		    #   从第一层开始  S1  s2   S3 

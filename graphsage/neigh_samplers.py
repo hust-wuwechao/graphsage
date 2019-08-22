@@ -1,3 +1,4 @@
+#coding:utf-8
 from __future__ import division
 from __future__ import print_function
 
@@ -11,7 +12,7 @@ FLAGS = flags.FLAGS
 """
 Classes that are used to sample node neighborhoods
 """
-
+#继承了Layer类
 class UniformNeighborSampler(Layer):
     """
     Uniformly samples neighbors.
@@ -20,8 +21,9 @@ class UniformNeighborSampler(Layer):
     def __init__(self, adj_info, **kwargs):
         super(UniformNeighborSampler, self).__init__(**kwargs)
         self.adj_info = adj_info
-
+    #覆盖了LAyer的_all 函数
     def _call(self, inputs):
+        #其中IDS是原始的定点的ID号码， num_samples是碎玉这些号码进行采样的数目 
         ids, num_samples = inputs
         print("ids ", ids)
         print("num_samples ", num_samples)
@@ -36,4 +38,4 @@ class UniformNeighborSampler(Layer):
         #我们只会截取这些beigb 的数目
         adj_lists = tf.slice(adj_lists, [0,0], [-1, num_samples])
         print("adj_lists  ", adj_lists )
-        return adj_lists
+        return adj_lists # 返回的结果是截断的邻接list ,注意不包含节点的特征哈
