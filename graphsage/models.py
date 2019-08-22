@@ -286,7 +286,7 @@ class SampleAndAggregate(GeneralizedModel):
 			# 讲 S3       S3*S2       S3*s2—S1 加入数组
             support_sizes.append(support_size)
             print("support_sizes", support_sizes)
-        print("samples", sample)
+        print("samples", samples)
         print("support_sizes", support_sizes)
         return samples, support_sizes
 
